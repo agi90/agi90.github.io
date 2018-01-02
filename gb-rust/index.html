@@ -1,0 +1,31 @@
+<!DOCTYPE><html>
+<head>
+<style>
+    input[type=file] {
+        display: block;
+        margin-bottom: 10px;
+    }
+
+    #gameboy {
+        background-image: url('assets/Gameboy.svg');
+        background-repeat: no-repeat;
+        background-size: 302px;
+        height: 495px;
+        position: relative;
+    }
+
+    #screen {
+        position: relative;
+        left: 71px;
+        top: 61px;
+    }
+</style>
+    <script type="text/javascript" src="glue.js"></script>
+</head>
+<body onload="onLoad()">
+    <input type="file" id="rom">
+    <div id=gameboy>
+        <canvas id="screen" width="160" height="144"></canvas>
+    </div>
+</body>
+</html>
