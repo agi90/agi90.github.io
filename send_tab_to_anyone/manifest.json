@@ -16,6 +16,11 @@
           "version": "0.7",
           "update_link": "https://agi.sferro.dev/send_tab_to_anyone/0.7.xpi",
           "update_hash": "sha256:1a2147e8923c5080600d58eef9f73bea277bed4487d44b566dc02a6f61e669d5"
+        },
+        {
+          "version": "0.8",
+          "update_link": "https://agi.sferro.dev/send_tab_to_anyone/0.8.xpi",
+          "update_hash": "sha256:9b128188077d11f8390380b608aba5eb100ad3e03babbbc473595c90e710fe2d"
         }
       ]
     }
