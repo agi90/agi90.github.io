@@ -45,7 +45,11 @@ window.onLoad = function () {
   window.onresize = () => {
     // XXX lots of magic numbers, mainly to make the board centered and of the right size
     const canvasWidth =
-      Math.min(canvas.parentElement.clientWidth - 20, window.innerHeight) * 0.9;
+      Math.min(
+        canvas.parentElement.clientWidth,
+        canvas.parentElement.clientHeight
+      ) * 0.9;
+    console.log(canvasWidth);
     const size = canvasWidth / 12.23;
     const canvasHeight = canvasWidth * 0.91;
     const dpr = window.devicePixelRatio || 1;
@@ -112,45 +116,42 @@ function initState(saveState) {
   const gameUi = document.querySelector("#game-state");
   const gameObserver = {
     onEvent(eventName, target, data) {
-      if (eventName === "statechange") {
-        const { state } = game;
-        const { currentPlayer } = game.state;
-        const { cards, roads, villages, cities } = game.players[
-          currentPlayer - 1
-        ].state;
-        gameUi.innerHTML = `
-          <span class=currentPlayer>
-              CurrentPlayer: ${game.state.currentPlayer}
-          </span>
-          <div class=pieces>
-            <span class=piece>
-              Roads: ${roads}
-            </span>
-            <span class=piece>
-              Villages: ${villages}
-            </span>
-            <span class=piece>
-              Cities: ${cities}
-            </span>
-          </div>
-          <div class=cards>
-            <span class=card>
-              Wood: ${cards.wood}
-            </span>
-            <span class=card>
-              Brick: ${cards.brick}
-            </span>
-            <span class=card>
-              Wheat: ${cards.wheat}
-            </span>
-            <span class=card>
-              Ore: ${cards.ore}
-            </span>
-            <span class=card>
-              Sheep: ${cards.sheep}
-            </span>
-          </div>
-        `;
+      switch (eventName) {
+        case "statechange": {
+          const { currentPlayer } = game;
+          const { state } = currentPlayer;
+          let html = `<div class="player-${currentPlayer.id}">
+            <div class="current-player "></div>
+            <div class=cards>`;
+          const { cards } = currentPlayer;
+          for (const [id, card] of Object.entries(cards)) {
+            const selected = card.selected ? "selected" : "";
+            html += `<div
+                data-card-id=${id}
+                class="card ${card.type} ${selected}"></div>`;
+          }
+          html += `</div><div class=pieces>`;
+          for (let piece of ["roads", "villages", "cities"]) {
+            for (let i = 0; i < state[piece]; i++) {
+              html += `<div class="piece ${piece}"></div>`;
+            }
+          }
+          html += `</div></div>`;
+          gameUi.innerHTML = html;
+          const onCardClick = (ev) => {
+            const id = ev.target.getAttribute("data-card-id");
+            cards[id].toggle();
+          };
+          document
+            .querySelectorAll(".card")
+            .forEach((c) => c.addEventListener("click", onCardClick));
+          break;
+        }
+
+        case "drawcard": {
+          const card = data;
+          card.addObserver(gameObserver);
+        }
       }
     },
   };
@@ -159,6 +160,7 @@ function initState(saveState) {
   for (const player of game.players) {
     player.addObserver(gameObserver);
   }
+  gameObserver.onEvent("statechange");
 
   return { hexes, vertexes, edges, game };
 }
